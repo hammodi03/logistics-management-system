@@ -1,0 +1,16 @@
+
+# Secrets
+.env
+**/.env
+
+# .NET build files
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+**/TestResults/
+
+# User-specific settings
+*.user
+*.suo

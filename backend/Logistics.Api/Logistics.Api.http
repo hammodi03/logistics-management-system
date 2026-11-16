@@ -1,0 +1,10 @@
+
+@host = http://localhost:5109
+
+### Get all packages
+GET {{host}}/api/packages
+Accept: application/json
+
+### Get package by ID
+GET {{host}}/api/packages/1
+Accept: application/json

@@ -1,0 +1,37 @@
+
+services:
+  db:
+    image: postgres:17
+    container_name: logistics-db
+    environment:
+      POSTGRES_DB: logistics_docker_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../database/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ../database/02_seed_data.sql:/docker-entrypoint-initdb.d/02_seed_data.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d logistics_docker_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Logistics.Api/Dockerfile
+    container_name: logistics-api
+    ports:
+      - "5110:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=logistics_docker_db;Username=postgres;Password=${POSTGRES_PASSWORD}"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
